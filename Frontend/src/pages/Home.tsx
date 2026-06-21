@@ -1,22 +1,7 @@
-import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { useAuth } from "../context/AuthContext";
 
 function Home() {
-  const [email, setEmail] = useState("");
-
-  useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        setEmail(user.email || "");
-      }
-    };
-
-    getUser();
-  }, []);
+  const { user } = useAuth();
 
   return (
     <div className="p-6">
@@ -28,8 +13,8 @@ function Home() {
         Access all previous year question papers in one place.
       </p>
 
-      <p className="mt-6 font-semibold">
-        Logged in as: {email || "Not Logged In"}
+      <p className="mt-6">
+        {user ? `Logged in as ${user.email}` : "Not Logged In"}
       </p>
     </div>
   );
