@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
+import Signup from "./pages/Signup";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard"
             element={
               <ProtectedRoute>
