@@ -20,9 +20,9 @@ export const uploadFile = async (
 
     res.status(200).json({
       success: true,
-      message: "PDF uploaded successfully",
-      data: result,
-    });
+      pdfUrl: result.url,
+      fileId: result.fileId,
+  });
 
   } catch (error) {
     console.error(error);

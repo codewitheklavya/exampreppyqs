@@ -4,6 +4,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
@@ -38,14 +39,14 @@ function Login() {
     navigate("/dashboard");
   };
 
-  const handleGuestLogin = () => {
-    localStorage.setItem(
-      "guest",
-      "true"
-    );
+  const {
+  loginAsGuest,
+} = useAuth();
 
-    navigate("/dashboard");
-  };
+const handleGuestLogin = () => {
+  loginAsGuest();
+  navigate("/dashboard");
+};
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">

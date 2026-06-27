@@ -5,7 +5,9 @@ type PaperCardProps = {
   paper: Paper;
 };
 
-function PaperCard({ paper }: PaperCardProps) {
+function PaperCard({
+  paper,
+}: PaperCardProps) {
   const { isGuest } = useAuth();
 
   const handleGuestDownload = () => {
@@ -15,8 +17,8 @@ function PaperCard({ paper }: PaperCardProps) {
   };
 
   return (
-    <div className="bg-white border rounded-xl p-5 shadow hover:shadow-lg transition">
-      <h2 className="text-2xl font-bold mb-3">
+    <div className="rounded-xl border bg-white p-5 shadow transition hover:shadow-lg">
+      <h2 className="mb-3 text-2xl font-bold">
         {paper.title}
       </h2>
 
@@ -30,9 +32,23 @@ function PaperCard({ paper }: PaperCardProps) {
 
         <p>
           <span className="font-semibold">
-            Branch:
+            Subject Code:
           </span>{" "}
-          {paper.branch}
+          {paper.subject_code}
+        </p>
+
+        <p>
+          <span className="font-semibold">
+            Course:
+          </span>{" "}
+          {paper.course}
+        </p>
+
+        <p>
+          <span className="font-semibold">
+            Paper Type:
+          </span>{" "}
+          {paper.paper_type}
         </p>
 
         <p>
@@ -50,12 +66,12 @@ function PaperCard({ paper }: PaperCardProps) {
         </p>
       </div>
 
-      <div className="flex gap-3 mt-5">
+      <div className="mt-5 flex gap-3">
         <a
           href={paper.pdf_url}
           target="_blank"
           rel="noreferrer"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
         >
           View PDF
         </a>
@@ -63,15 +79,15 @@ function PaperCard({ paper }: PaperCardProps) {
         {isGuest ? (
           <button
             onClick={handleGuestDownload}
-            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+            className="cursor-pointer rounded-lg bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
           >
-            Download Locked 🔒
+            Download 🔒
           </button>
         ) : (
           <a
             href={paper.pdf_url}
             download
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+            className="rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700"
           >
             Download PDF
           </a>

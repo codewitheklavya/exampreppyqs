@@ -13,7 +13,7 @@ type AuthContextType = {
   user: User | null;
   loading: boolean;
   isGuest: boolean;
-  setIsGuest: (value: boolean) => void;
+  loginAsGuest: () => void;
   logout: () => Promise<void>;
 };
 
@@ -21,7 +21,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   isGuest: false,
-  setIsGuest: () => {},
+  loginAsGuest: () => {},
   logout: async () => {},
 });
 
@@ -41,9 +41,13 @@ export function AuthProvider({
   const [isGuest, setIsGuest] =
     useState(false);
 
+  const loginAsGuest = () => {
+    localStorage.setItem("guest", "true");
+    setIsGuest(true);
+  };
+
   const logout = async () => {
     localStorage.removeItem("guest");
-
     setIsGuest(false);
 
     await supabase.auth.signOut();
@@ -73,6 +77,14 @@ export function AuthProvider({
     } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null);
+
+        // If a real user logs in,
+        // remove guest mode.
+        if (session?.user) {
+          localStorage.removeItem("guest");
+          setIsGuest(false);
+        }
+
         setLoading(false);
       }
     );
@@ -88,7 +100,7 @@ export function AuthProvider({
         user,
         loading,
         isGuest,
-        setIsGuest,
+        loginAsGuest,
         logout,
       }}
     >
