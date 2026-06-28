@@ -25,13 +25,26 @@ function Signup() {
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+const { data, error } = await supabase.auth.signUp({
+  email,
+  password,
+});
+
+console.log("Signup Data:", data);
+console.log("Signup Error:", error);
+
+if (error) {
+  alert(error.message);
+  return;
+}
+
+alert(
+  "Account created successfully!\n\nPlease check your email inbox and click the verification link before logging in.\n\nIf you don't see the email, check your Spam or Promotions folder."
+);
+navigate("/dashboard");
 
     if (error) {
-      alert(error.message);
+      alert(error);
       return;
     }
 
