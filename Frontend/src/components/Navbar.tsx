@@ -45,7 +45,7 @@ function Navbar() {
             letterSpacing: '-0.02em',
             transition: 'color 400ms',
           }}>
-            📚 PYQSBank
+            📚 exampreppyqs
           </h1>
         </Link>
 

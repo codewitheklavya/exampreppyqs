@@ -71,7 +71,7 @@ function MainLayout() {
         }}>
           <p style={{ margin: 0, fontWeight: 500 }}>
             © {new Date().getFullYear()}{" "}
-            <span style={{ fontWeight: 600, color: 'var(--color-primary)' }}>PYQSBank</span>.
+            <span style={{ fontWeight: 600, color: 'var(--color-primary)' }}>exampreppyqs</span>.
             All rights reserved.
           </p>
           <div style={{
@@ -90,7 +90,7 @@ function MainLayout() {
             </span>
             <span style={{ color: 'var(--border-color)' }}>|</span>
             <a
-              href="https://github.com/codewitheklavya"
+              href="https://github.com/codewitheklavya/exampreppyqs"
               target="_blank"
               rel="noopener noreferrer"
               style={{
