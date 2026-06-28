@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
+import { Upload, FileText, CheckCircle, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function Admin() {
   const [title, setTitle] = useState("");
@@ -9,16 +11,10 @@ function Admin() {
   const [subjectCode, setSubjectCode] = useState("");
   const [paperType, setPaperType] = useState("");
   const [year, setYear] = useState("");
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const [pdfFile, setPdfFile] =
-    useState<File | null>(null);
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!pdfFile) {
@@ -31,20 +27,14 @@ function Admin() {
 
       // Upload PDF to backend
       const formData = new FormData();
-
       formData.append("pdf", pdfFile);
 
-      const uploadResponse =
-        await fetch(
-          "http://localhost:5000/api/upload",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
+      const uploadResponse = await fetch("http://localhost:5000/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      const uploadResult =
-        await uploadResponse.json();
+      const uploadResult = await uploadResponse.json();
 
       if (!uploadResult.success) {
         alert("Failed to upload PDF");
@@ -52,35 +42,27 @@ function Admin() {
       }
 
       // Save paper details in Supabase
-      const { error } = await supabase
-        .from("papers")
-        .insert([
-          {
-            title,
-            course,
-            semester: Number(semester),
-            subject,
-            subject_code: subjectCode,
-            paper_type: paperType,
-            year: Number(year),
-            pdf_url:
-              uploadResult.pdfUrl,
-            uploaded_by:
-              "codewitheklavya@gmail.com",
-          },
-        ]);
+      const { error } = await supabase.from("papers").insert([
+        {
+          title,
+          course,
+          semester: Number(semester),
+          subject,
+          subject_code: subjectCode,
+          paper_type: paperType,
+          year: Number(year),
+          pdf_url: uploadResult.pdfUrl,
+          uploaded_by: "codewitheklavya@gmail.com",
+        },
+      ]);
 
       if (error) {
-        console.log(error);
-        alert(
-          "Failed to save paper"
-        );
+        console.error(error);
+        alert("Failed to save paper");
         return;
       }
 
-      alert(
-        "Paper uploaded successfully!"
-      );
+      alert("Paper uploaded successfully!");
 
       setTitle("");
       setSubject("");
@@ -91,170 +73,245 @@ function Admin() {
       setPdfFile(null);
     } catch (error) {
       console.error(error);
-      alert(
-        "Something went wrong"
-      );
+      alert("Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-8">
-      <div className="rounded-xl border bg-white p-8 shadow-lg">
-        <h1 className="mb-8 text-center text-3xl font-bold">
-          Upload New Paper
-        </h1>
+    <div className="animate-fade-in" style={{ padding: "40px 24px", maxWidth: "800px", margin: "0 auto" }}>
+      {/* Header link back to dashboard */}
+      <div style={{ marginBottom: "24px" }}>
+        <Link to="/dashboard" style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "8px",
+          color: "var(--text-secondary)",
+          textDecoration: "none",
+          fontWeight: 600,
+          fontSize: "0.9rem",
+          transition: "color 200ms",
+        }}>
+          <ArrowLeft size={16} /> Back to Dashboard
+        </Link>
+      </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
-          <input
-            type="text"
-            placeholder="Paper Title"
-            value={title}
-            onChange={(e) =>
-              setTitle(
-                e.target.value
-              )
-            }
-            className="w-full rounded-lg border p-3"
-            required
-          />
+      <div className="glass-card" style={{ padding: "40px 32px" }}>
+        <div style={{ textAlign: "center", marginBottom: "36px" }}>
+          <div style={{
+            width: "56px",
+            height: "56px",
+            background: "var(--color-primary-soft)",
+            color: "var(--color-primary)",
+            borderRadius: "var(--radius-md)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 16px",
+            transition: "background-color 400ms, color 400ms",
+          }}>
+            <Upload size={24} />
+          </div>
+          <h1 style={{
+            fontSize: "1.75rem",
+            fontWeight: 800,
+            color: "var(--text-primary)",
+            marginBottom: "6px",
+            letterSpacing: "-0.02em",
+            transition: "color 400ms",
+          }}>
+            Upload New Paper
+          </h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", transition: "color 400ms" }}>
+            Add previous year questions to the public repository
+          </p>
+        </div>
 
-          <input
-            type="text"
-            placeholder="Subject Name"
-            value={subject}
-            onChange={(e) =>
-              setSubject(
-                e.target.value.toUpperCase()
-              )
-            }
-            className="w-full rounded-lg border p-3"
-            required
-          />
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          {/* Paper Title */}
+          <div>
+            <label className="form-label">Paper Title</label>
+            <input
+              type="text"
+              placeholder="e.g. End Semester Exam Nov 2024"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="form-input"
+              required
+            />
+          </div>
 
-          <input
-            type="text"
-            placeholder="Subject Code (Example: MDC-1)"
-            value={subjectCode}
-            onChange={(e) =>
-              setSubjectCode(
-                e.target.value
-              )
-            }
-            className="w-full rounded-lg border p-3"
-            required
-          />
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "20px",
+          }}>
+            {/* Subject Name */}
+            <div>
+              <label className="form-label">Subject Name</label>
+              <input
+                type="text"
+                placeholder="e.g. COMPUTER NETWORKS"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value.toUpperCase())}
+                className="form-input"
+                required
+              />
+            </div>
 
-          <select
-            value={paperType}
-            onChange={(e) =>
-              setPaperType(
-                e.target.value
-              )
-            }
-            className="w-full rounded-lg border p-3"
-            required
-          >
-            <option value="">
-              Select Paper Type
-            </option>
+            {/* Subject Code */}
+            <div>
+              <label className="form-label">Subject Code</label>
+              <input
+                type="text"
+                placeholder="e.g. MDC-1 or BCS-301"
+                value={subjectCode}
+                onChange={(e) => setSubjectCode(e.target.value)}
+                className="form-input"
+                required
+              />
+            </div>
+          </div>
 
-            <option value="MDC">
-              MDC
-            </option>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "20px",
+          }}>
+            {/* Paper Type */}
+            <div>
+              <label className="form-label">Paper Type</label>
+              <select
+                value={paperType}
+                onChange={(e) => setPaperType(e.target.value)}
+                className="form-select"
+                required
+              >
+                <option value="">Select Paper Type</option>
+                <option value="MDC">MDC</option>
+                <option value="AEC">AEC</option>
+                <option value="VAC">VAC</option>
+                <option value="SEC">SEC</option>
+                <option value="MJ">MJ</option>
+                <option value="MN">MN</option>
+              </select>
+            </div>
 
-            <option value="AEC">
-              AEC
-            </option>
+            {/* Course */}
+            <div>
+              <label className="form-label">Course</label>
+              <input
+                type="text"
+                placeholder="e.g. BCA or B.Sc"
+                value={course}
+                onChange={(e) => setCourse(e.target.value)}
+                className="form-input"
+                required
+              />
+            </div>
+          </div>
 
-            <option value="VAC">
-              VAC
-            </option>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "20px",
+          }}>
+            {/* Semester */}
+            <div>
+              <label className="form-label">Semester</label>
+              <select
+                value={semester}
+                onChange={(e) => setSemester(e.target.value)}
+                className="form-select"
+                required
+              >
+                <option value="">Select Semester</option>
+                {[1, 2, 3, 4, 5, 6].map((sem) => (
+                  <option key={sem} value={sem}>
+                    Semester {sem}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            <option value="SEC">
-              SEC
-            </option>
+            {/* Exam Year */}
+            <div>
+              <label className="form-label">Exam Year</label>
+              <input
+                type="number"
+                placeholder="e.g. 2024"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+                className="form-input"
+                required
+              />
+            </div>
+          </div>
 
-            <option value="MJ">
-              MJ
-            </option>
+          {/* File Upload Area */}
+          <div>
+            <label className="form-label">PDF Question Paper</label>
+            <div style={{
+              border: pdfFile ? "2px solid var(--color-success)" : "2px dashed var(--border-input)",
+              borderRadius: "var(--radius-md)",
+              padding: "24px",
+              textAlign: "center",
+              cursor: "pointer",
+              background: "var(--bg-input)",
+              position: "relative",
+              transition: "all 200ms ease",
+            }}>
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={(e) => setPdfFile(e.target.files?.[0] ?? null)}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  opacity: 0,
+                  cursor: "pointer",
+                }}
+                required
+              />
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+                {pdfFile ? (
+                  <>
+                    <CheckCircle size={32} style={{ color: "var(--color-success)" }} />
+                    <p style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: "0.95rem" }}>
+                      {pdfFile.name}
+                    </p>
+                    <p style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>
+                      Click or drag to replace
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <FileText size={32} style={{ color: "var(--text-muted)" }} />
+                    <p style={{ fontWeight: 500, color: "var(--text-primary)", fontSize: "0.95rem" }}>
+                      Choose file or drag & drop here
+                    </p>
+                    <p style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>
+                      Only PDF documents are allowed
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
 
-            <option value="MN">
-              MN
-            </option>
-          </select>
-
-          
-          <input
-            type="text"
-            placeholder="Course (Example: BCA)"
-            value={course}
-            onChange={(e) => setCourse(e.target.value)}
-            className="w-full rounded-lg border p-3"
-            required
-          />
-
-          <select
-            value={semester}
-            onChange={(e) =>
-              setSemester(
-                e.target.value
-              )
-            }
-            className="w-full rounded-lg border p-3"
-            required
-          >
-            <option value="">
-              Select Semester
-            </option>
-
-            {[1, 2, 3, 4, 5, 6].map(
-              (sem) => (
-                <option
-                  key={sem}
-                  value={sem}
-                >
-                  Semester {sem}
-                </option>
-              )
-            )}
-          </select>
-
-          <input
-            type="number"
-            placeholder="Exam Year (Example: 2018)"
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-            className="w-full rounded-lg border p-3"
-            required
-          />
-
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={(e) =>
-              setPdfFile(
-                e.target
-                  .files?.[0] ??
-                  null
-              )
-            }
-            className="w-full rounded-lg border p-3"
-            required
-          />
-
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-blue-600 p-3 font-semibold text-white hover:bg-blue-700 disabled:bg-gray-400"
+            className={`btn btn-primary ${loading ? 'btn-disabled' : ''}`}
+            style={{ width: "100%", padding: "13px", marginTop: "12px", gap: "10px" }}
           >
-            {loading
-              ? "Uploading..."
-              : "Upload Paper"}
+            {loading ? <span className="spinner" /> : <Upload size={16} />}
+            {loading ? "Uploading Paper..." : "Upload Paper"}
           </button>
         </form>
       </div>

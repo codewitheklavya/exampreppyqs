@@ -1,95 +1,148 @@
 import type { Paper } from "../types/Paper";
 import { useAuth } from "../context/AuthContext";
+import { Eye, Download, Calendar } from "lucide-react";
 
 type PaperCardProps = {
   paper: Paper;
 };
 
-function PaperCard({
-  paper,
-}: PaperCardProps) {
+function PaperCard({ paper }: PaperCardProps) {
   const { isGuest } = useAuth();
 
   const handleGuestDownload = () => {
-    alert(
-      "Please create an account to download papers."
-    );
+    alert("Please create an account to download papers.");
   };
 
   return (
-    <div className="rounded-xl border bg-white p-5 shadow transition hover:shadow-lg">
-      <h2 className="mb-3 text-2xl font-bold">
-        {paper.title}
-      </h2>
+    <div
+      className="glass-card"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        padding: "24px",
+        height: "100%",
+      }}
+    >
+      <div>
+        {/* Title */}
+        <h2
+          style={{
+            fontSize: "1.25rem",
+            fontWeight: 800,
+            color: "var(--text-primary)",
+            marginBottom: "16px",
+            lineHeight: 1.4,
+            transition: "color 400ms",
+          }}
+        >
+          {paper.title}
+        </h2>
 
-      <div className="space-y-2 text-gray-700">
-        <p>
-          <span className="font-semibold">
-            Subject:
-          </span>{" "}
-          {paper.subject}
-        </p>
+        {/* Badges Info */}
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "8px",
+            marginBottom: "20px",
+          }}
+        >
+          {paper.course && (
+            <span className="badge badge-blue">
+              {paper.course}
+            </span>
+          )}
+          {paper.paper_type && (
+            <span className="badge badge-purple">
+              {paper.paper_type}
+            </span>
+          )}
+          {paper.semester && (
+            <span className="badge badge-amber">
+              Sem {paper.semester}
+            </span>
+          )}
+          {paper.year && (
+            <span className="badge badge-green" style={{ gap: "4px" }}>
+              <Calendar size={12} /> {paper.year}
+            </span>
+          )}
+        </div>
 
-        <p>
-          <span className="font-semibold">
-            Subject Code:
-          </span>{" "}
-          {paper.subject_code}
-        </p>
-
-        <p>
-          <span className="font-semibold">
-            Course:
-          </span>{" "}
-          {paper.course}
-        </p>
-
-        <p>
-          <span className="font-semibold">
-            Paper Type:
-          </span>{" "}
-          {paper.paper_type}
-        </p>
-
-        <p>
-          <span className="font-semibold">
-            Semester:
-          </span>{" "}
-          {paper.semester}
-        </p>
-
-        <p>
-          <span className="font-semibold">
-            Year:
-          </span>{" "}
-          {paper.year}
-        </p>
+        {/* Text Details */}
+        <div
+          style={{
+            fontSize: "0.9rem",
+            color: "var(--text-secondary)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            marginBottom: "24px",
+            transition: "color 400ms",
+          }}
+        >
+          <div style={{ display: "flex", gap: "8px" }}>
+            <span style={{ fontWeight: 600, color: "var(--text-primary)", minWidth: "100px" }}>Subject:</span>
+            <span>{paper.subject}</span>
+          </div>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <span style={{ fontWeight: 600, color: "var(--text-primary)", minWidth: "100px" }}>Code:</span>
+            <span style={{ fontFamily: "monospace", letterSpacing: "0.05em" }}>{paper.subject_code}</span>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-5 flex gap-3">
+      {/* Actions */}
+      <div style={{ display: "flex", gap: "10px", width: "100%" }}>
         <a
           href={paper.pdf_url}
           target="_blank"
           rel="noreferrer"
-          className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+          className="btn btn-ghost"
+          style={{
+            flex: 1,
+            padding: "10px",
+            fontSize: "0.85rem",
+            gap: "6px",
+            textDecoration: "none",
+          }}
         >
+          <Eye size={15} />
           View PDF
         </a>
 
         {isGuest ? (
           <button
             onClick={handleGuestDownload}
-            className="cursor-pointer rounded-lg bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+            className="btn btn-primary"
+            style={{
+              flex: 1,
+              padding: "10px",
+              fontSize: "0.85rem",
+              gap: "6px",
+              background: "var(--text-muted)",
+              cursor: "pointer",
+            }}
           >
+            <Download size={15} />
             Download 🔒
           </button>
         ) : (
           <a
             href={paper.pdf_url}
             download
-            className="rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+            className="btn btn-primary"
+            style={{
+              flex: 1,
+              padding: "10px",
+              fontSize: "0.85rem",
+              gap: "6px",
+              textDecoration: "none",
+            }}
           >
-            Download PDF
+            <Download size={15} />
+            Download
           </a>
         )}
       </div>
