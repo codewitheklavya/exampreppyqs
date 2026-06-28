@@ -6,15 +6,17 @@ export const syncFiles = async (
   res: Response
 ) => {
   try {
-    const files = await syncImageKitFiles();
+    const result = await syncImageKitFiles();
 
     res.json({
       success: true,
-      total: files.length,
-      files,
+      total: result.papersToInsert.length,
+      skipped: result.skipped,
+      failed: result.failed,
+      papers: result.papersToInsert,
     });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
 
     res.status(500).json({
       success: false,
