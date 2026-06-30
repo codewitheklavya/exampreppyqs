@@ -5,7 +5,7 @@ import syncRoute from "./src/routes/sync.route";
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
-
+    
 app.use("/api/sync", syncRoute);
 
 app.listen(PORT,()=>{

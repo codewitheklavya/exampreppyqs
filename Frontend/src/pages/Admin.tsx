@@ -3,6 +3,8 @@ import { supabase } from "../lib/supabase";
 import { Upload, FileText, CheckCircle, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function Admin() {
   const [title, setTitle] = useState("");
   const [course, setCourse] = useState("BCA");
@@ -29,10 +31,10 @@ function Admin() {
       const formData = new FormData();
       formData.append("pdf", pdfFile);
 
-      const uploadResponse = await fetch("http://localhost:5000/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const uploadResponse = await fetch(`${API_URL}/api/upload`, {
+      method: "POST",
+      body: formData,
+    });
 
       const uploadResult = await uploadResponse.json();
 
