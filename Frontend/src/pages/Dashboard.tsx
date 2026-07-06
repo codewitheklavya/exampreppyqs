@@ -25,6 +25,9 @@ function Dashboard() {
           return;
         }
 
+        // DEBUG: Check what data comes from Supabase (remove after debugging)
+        console.log("Papers from DB:", data?.slice(0, 3)?.map(p => ({ id: p.id, title: p.title, semester: p.semester, semesterType: typeof p.semester })));
+
         setPapers(data as Paper[]);
       } finally {
         setLoading(false);
@@ -36,15 +39,29 @@ function Dashboard() {
 
   const filteredPapers = useMemo(() => {
     const value = search.toLowerCase().trim();
+    if (!value) return papers;
+
+    // Check if the search is a semester query like "sem4", "sem 4", "semester 4", "semester4", "sem-4"
+    const semesterMatch = value.match(/^sem(?:ester)?[\s\-]*(\d+)$/);
+    const searchedSemester = semesterMatch ? Number(semesterMatch[1]) : null;
 
     return papers.filter((paper) => {
+      // If user searched for a specific semester, match it
+      if (searchedSemester !== null) {
+        // Use == for loose comparison (handles string vs number from DB)
+        return Number(paper.semester) === searchedSemester;
+      }
+
+      // Otherwise, do the normal text search across all fields including semester
+      const semStr = paper.semester != null ? `sem ${paper.semester} semester ${paper.semester}` : "";
       return (
         (paper.title ?? "").toLowerCase().includes(value) ||
         (paper.subject ?? "").toLowerCase().includes(value) ||
         (paper.subject_code ?? "").toLowerCase().includes(value) ||
         (paper.course ?? "").toLowerCase().includes(value) ||
         (paper.paper_type ?? "").toLowerCase().includes(value) ||
-        String(paper.year ?? "").includes(value)
+        String(paper.year ?? "").includes(value) ||
+        semStr.includes(value)
       );
     });
   }, [papers, search]);
@@ -92,7 +109,7 @@ function Dashboard() {
             />
             <input
               type="text"
-              placeholder="Search by title, subject, code, course, year..."
+              placeholder="Search by title, subject, code, course, semester (e.g. sem4)..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="form-input"
